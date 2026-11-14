@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>台灣 Nintendo 遊戲目錄（公開版）</title>
+    <style>
+      :root {
+        --bg: #f4f4f6;
+        --surface: #ffffff;
+        --surface-2: #ececf0;
+        --ink: #1c1c22;
+        --ink-2: #55565f;
+        --ink-3: #83848e;
+        --line: #dddde3;
+        --accent: #e60012;
+        --accent-ink: #ffffff;
+        --accent-soft: #fde8ea;
+        --sale: #c2000f;
+        --chip: #ececf0;
+        --shadow: 0 1px 3px rgba(20, 20, 30, .08), 0 4px 14px rgba(20, 20, 30, .05);
+        --radius: 10px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #141417;
+          --surface: #1e1e23;
+          --surface-2: #26262d;
+          --ink: #f2f2f5;
+          --ink-2: #b9bac2;
+          --ink-3: #8b8c96;
+          --line: #33333c;
+          --accent: #ff3b47;
+          --accent-ink: #ffffff;
+          --accent-soft: #3d1a1e;
+          --sale: #ff6b74;
+          --chip: #26262d;
+          --shadow: 0 1px 3px rgba(0,0,0,.4), 0 4px 14px rgba(0,0,0,.3);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "PingFang TC", "PingFang SC", "Microsoft JhengHei", "Noto Sans TC", system-ui, -apple-system, sans-serif;
+        font-size: 15px;
+        line-height: 1.5;
+      }
+      button, select, input { font: inherit; color: inherit; }
+      button, [role="button"], select, summary, input:not([type="checkbox"]) { min-height: 2.25rem; }
+      a { color: var(--accent); }
+
+      .wrap { max-width: 1240px; margin: 0 auto; padding: 16px 16px 48px; }
+
+      /* ---- stats ---- */
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .stat {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        padding: 12px 14px;
+        box-shadow: var(--shadow);
+      }
+      .stat .num { font-size: 26px; font-weight: 800; letter-spacing: -.02em; line-height: 1.15; font-variant-numeric: tabular-nums; }
+      .stat .num.red { color: var(--accent); }
+      .stat .lbl { font-size: 12.5px; color: var(--ink-2); margin-top: 2px; }
+      .stat .num.small { font-size: 16px; font-weight: 700; padding-top: 6px; }
+      @media (max-width: 640px) {
+        .stats { grid-template-columns: repeat(2, 1fr); }
+        .stat .num { font-size: 22px; }
+      }
+
+      /* ---- controls ---- */
+      .controls {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 14px;
+        margin-bottom: 14px;
+      }
+      .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+      .row + .row { margin-top: 12px; }
+      .search {
+        flex: 1 1 260px;
+        display: flex; align-items: center; gap: 8px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 0 12px;
+      }
+      .search svg { flex: none; opacity: .55; }
+      .search input {
+        flex: 1; min-width: 0;
+        border: 0; background: transparent; outline: none;
+        padding: 8px 0;
+      }
+      select {
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 10px;
+        max-width: 100%;
+      }
+      .field { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--ink-2); }
+      .field input[type="number"] {
+        width: 92px;
+        background: var(--surface-2);
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 6px 8px;
+      }
+      .toggle {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: var(--chip);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 6px 12px 6px 8px;
+        cursor: pointer;
+        font-size: 13.5px;
+        min-height: 2.25rem;
+        user-select: none;
+      }
+      .toggle input { width: 17px; height: 17px; accent-color: var(--accent); margin: 0; }
+      .toggle.on { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); font-weight: 600; }
+
+      .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+      .chip {
+        border: 1px solid var(--line);
+        background: var(--chip);
+        border-radius: 999px;
+        padding: 6px 13px;
+        font-size: 13.5px;
+        cursor: pointer;
+        min-height: 2.25rem;
+      }
+      .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
+      .chip .cnt { opacity: .65; font-size: 12px; margin-left: 3px; font-variant-numeric: tabular-nums; }
+
+      details.pub { border-top: 1px dashed var(--line); padding-top: 12px; margin-top: 12px; }
+      details.pub summary { cursor: pointer; font-weight: 700; font-size: 14.5px; padding: 4px 0; }
+      .pub-search { margin: 8px 0; max-width: 340px; }
+      .pub-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+        gap: 2px 14px;
+        max-height: 264px;
+        overflow-y: auto;
+        padding-right: 4px;
+      }
+      .pub-item {
+        display: flex; align-items: center; gap: 8px;
+        padding: 7px 6px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13.5px;
+        min-height: 2.25rem;
+      }
+      .pub-item:hover { background: var(--surface-2); }
+      .pub-item input { width: 17px; height: 17px; accent-color: var(--accent); flex: none; }
+      .pub-item .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .pub-item .cnt { color: var(--ink-3); font-size: 12px; font-variant-numeric: tabular-nums; }
+      .sel-pubs { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; margin-top: 10px; }
+      .sel-pubs:empty { display: none; }
+      .sel-tag {
+        display: inline-flex; align-items: center; gap: 6px;
+        background: var(--accent-soft);
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        padding: 4px 6px 4px 12px;
+        font-size: 13px; font-weight: 600;
+      }
+      .sel-tag button {
+        border: 0; background: transparent; cursor: pointer;
+        width: 26px; height: 26px; min-height: 26px;
+        border-radius: 50%; font-size: 15px; line-height: 1; padding: 0;
+        color: var(--ink-2);
+      }
+      .clear-btn {
+        border: 1px solid var(--line); background: var(--surface);
+        border-radius: 8px; padding: 6px 12px; cursor: pointer; font-size: 13px;
+      }
+
+      .result-line { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 4px 2px 12px; color: var(--ink-2); font-size: 13.5px; }
+      .result-line b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+      /* ---- grid & cards ---- */
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(258px, 1fr));
+        gap: 14px;
+      }
+      @media (max-width: 560px) {
+        .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        display: flex; flex-direction: column;
+      }
+      .cover { position: relative; aspect-ratio: 16 / 9; background: var(--surface-2); overflow: hidden; }
+      .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .cover .noimg {
+        position: absolute; inset: 0;
+        display: flex; align-items: center; justify-content: center;
+        padding: 14px; text-align: center;
+        color: var(--ink-3); font-weight: 700; font-size: 14px;
+      }
+      .badge-off {
+        position: absolute; left: 8px; top: 8px;
+        background: var(--accent); color: #fff;
+        font-weight: 800; font-size: 13.5px;
+        border-radius: 6px; padding: 3px 8px;
+        font-variant-numeric: tabular-nums;
+      }
+      .fav {
+        position: absolute; right: 6px; top: 6px;
+        width: 38px; height: 38px; min-height: 38px;
+        border-radius: 50%;
+        border: 1px solid rgba(0,0,0,.12);
+        background: rgba(255,255,255,.92);
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        padding: 0;
+      }
+      .fav svg { width: 19px; height: 19px; fill: none; stroke: #55565f; stroke-width: 2; }
+      .fav.active svg { fill: var(--accent); stroke: var(--accent); }
+      .card-body { padding: 11px 12px 12px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+      .gname { font-weight: 700; font-size: 15px; line-height: 1.4; }
+      .meta { font-size: 12.5px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: baseline; }
+      .plat {
+        font-size: 11px; font-weight: 700;
+        border: 1px solid var(--line); border-radius: 4px;
+        padding: 1px 5px; color: var(--ink-2);
+        white-space: nowrap;
+      }
+      .plat.s2 { border-color: var(--accent); color: var(--accent); }
+      .pub-link {
+        border: 0; background: none; padding: 2px 0; min-height: 0;
+        color: var(--ink-2); cursor: pointer; font-size: 12.5px;
+        text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px;
+        text-align: left;
+      }
+      .pub-link:hover { color: var(--accent); }
+      .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+      .tag {
+        font-size: 11.5px;
+        background: var(--chip);
+        border-radius: 4px;
+        padding: 2px 7px;
+        color: var(--ink-2);
+      }
+      .tag.unknown { background: transparent; border: 1px dashed var(--line); }
+      .price { margin-top: auto; padding-top: 4px; }
+      .price .now { font-size: 19px; font-weight: 800; font-variant-numeric: tabular-nums; }
+      .price .now.sale { color: var(--sale); }
+      .price .was { color: var(--ink-3); text-decoration: line-through; margin-left: 7px; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+      .dates { font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+      .dates .end { color: var(--sale); font-weight: 700; }
+      .ext { font-size: 13px; font-weight: 600; text-decoration: none; display: inline-block; padding: 4px 0; }
+      .ext:hover { text-decoration: underline; }
+
+      /* ---- states & paging ---- */
+      .state {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 44px 20px;
+        text-align: center;
+        color: var(--ink-2);
+      }
+      .state h2 { color: var(--ink); font-size: 18px; margin: 0 0 8px; }
+      .state p { margin: 0 0 16px; }
+      .retry {
+        background: var(--accent); color: #fff; border: 0;
+        border-radius: 8px; padding: 9px 22px; cursor: pointer; font-weight: 700;
+      }
+      .spinner {
+        width: 34px; height: 34px; margin: 0 auto 14px;
+        border-radius: 50%;
+        border: 4px solid var(--line); border-top-color: var(--accent);
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+      .pager { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; align-items: center; margin-top: 22px; }
+      .pager button {
+        min-width: 40px; height: 40px; min-height: 40px;
+        border: 1px solid var(--line); background: var(--surface);
+        border-radius: 8px; cursor: pointer; padding: 0 10px;
+        font-variant-numeric: tabular-nums;
+      }
+      .pager button.cur { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 800; }
+      .pager button:disabled { opacity: .4; cursor: default; }
+      .pager .gap { color: var(--ink-3); padding: 0 2px; }
+      .hidden { display: none !important; }
+    </style>
+  </head>
+  <body>
+    <main class="wrap">
+      <section class="stats" aria-label="目錄統計">
+        <div class="stat"><div class="num" id="stTotal">—</div><div class="lbl">目錄總數</div></div>
+        <div class="stat"><div class="num" id="stPriced">—</div><div class="lbl">有台灣售價</div></div>
+        <div class="stat"><div class="num red" id="stSale">—</div><div class="lbl">特價中</div></div>
+        <div class="stat"><div class="num small" id="stUpdated">—</div><div class="lbl">資料更新時間</div></div>
+      </section>
+
+      <section class="controls" aria-label="搜尋與篩選">
+        <div class="row">
+          <label class="search">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+            <input id="q" type="search" placeholder="搜尋遊戲名稱或發行商…" autocomplete="off" />
+          </label>
+          <label class="field">排序
+            <select id="sort">
+              <option value="deal">精選特價（預設）</option>
+              <option value="discount">折扣最多</option>
+              <option value="priceAsc">價格低到高</option>
+              <option value="priceDesc">價格高到低</option>
+              <option value="ending">特價最早結束</option>
+              <option value="newest">最新發售</option>
+              <option value="name">名稱 A–Z</option>
+            </select>
+          </label>
+          <label class="field">平台
+            <select id="platform">
+              <option value="">全部</option>
+              <option value="Nintendo Switch">Nintendo Switch</option>
+              <option value="Nintendo Switch 2">Nintendo Switch 2</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row">
+          <label class="field">價格 NT$
+            <input id="priceMin" type="number" min="0" inputmode="numeric" placeholder="最低" /> –
+            <input id="priceMax" type="number" min="0" inputmode="numeric" placeholder="最高" />
+          </label>
+          <label class="field">最低折扣
+            <select id="minDisc">
+              <option value="0">不限</option>
+              <option value="30">30% OFF 以上</option>
+              <option value="50">50% OFF 以上</option>
+              <option value="70">70% OFF 以上</option>
+              <option value="90">90% OFF 以上</option>
+            </select>
+          </label>
+          <label class="field">優惠期限
+            <select id="endingIn">
+              <option value="">不限</option>
+              <option value="3">3 天內結束</option>
+              <option value="7">7 天內結束</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="row" id="toggles">
+          <label class="toggle"><input type="checkbox" id="fSale" />只看特價中</label>
+          <label class="toggle"><input type="checkbox" id="fZh" />支援繁體中文</label>
+          <label class="toggle"><input type="checkbox" id="fReleased" />只看已發售</label>
+          <label class="toggle"><input type="checkbox" id="fFav" />只看收藏</label>
+          <button class="clear-btn" id="clearAll" type="button">清除全部篩選</button>
+        </div>
+
+        <div class="row">
+          <div class="chips" id="genreChips" role="group" aria-label="遊戲類型"></div>
+        </div>
+
+        <details class="pub" id="pubDetails">
+          <summary>發行商 <span id="pubSummaryCnt" style="color:var(--ink-3);font-weight:400;font-size:13px"></span></summary>
+          <label class="search pub-search">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+            <input id="pubQ" type="search" placeholder="搜尋發行商…" autocomplete="off" />
+          </label>
+          <div class="pub-list" id="pubList"></div>
+        </details>
+        <div class="sel-pubs" id="selPubs"></div>
+      </section>
+
+      <div id="loadingState" class="state">
+        <div class="spinner" aria-hidden="true"></div>
+        <h2>正在載入遊戲目錄</h2>
+        <p>從公開資料來源讀取中，第一次開啟需要一點時間。</p>
+      </div>
+
+      <div id="errorState" class="state hidden">
+        <h2>目錄載入失敗</h2>
+        <p id="errorMsg">無法讀取公開目錄資料，請檢查網路連線後再試一次。</p>
+        <button class="retry" id="retryBtn" type="button">重新載入</button>
+      </div>
+
+      <div id="content" class="hidden">
+        <div class="result-line" id="resultLine"></div>
+        <div class="grid" id="grid"></div>
+        <div id="emptyState" class="state hidden">
+          <h2>沒有符合條件的遊戲</h2>
+          <p>換個關鍵字，或放寬篩選條件再試試。</p>
+          <button class="retry" id="emptyClear" type="button">清除全部篩選</button>
+        </div>
+        <nav class="pager" id="pager" aria-label="分頁"></nav>
+      </div>
+    </main>
+
+    <script>
+      "use strict";
+      // Same catalog.json mirrored on several hosts: some browsers, extensions
+      // or networks block one host (e.g. raw.githubusercontent.com) while the
+      // file itself is fine, so load() walks this list until one succeeds.
+      var DATA_URLS = [
+        "https://raw.githubusercontent.com/jd7120-bot/taiwan-nintendo-catalog/main/catalog.json",
+        "https://cdn.jsdelivr.net/gh/jd7120-bot/taiwan-nintendo-catalog@main/catalog.json",
+        "https://cdn.statically.io/gh/jd7120-bot/taiwan-nintendo-catalog/main/catalog.json"
+      ];
+      var PAGE_SIZE = 24;
+      var GENRES = ["動作", "冒險", "RPG", "策略", "模擬", "運動", "競速", "益智", "派對", "音樂", "射擊", "格鬥", "恐怖", "休閒"];
+      var UNKNOWN = "待確認";
+      var FAV_KEY = "tw-nintendo-catalog-public-favs";
+
+      var games = [];
+      var updatedAt = null;
+      var state = {
+        q: "", genre: "", pubs: {}, platform: "",
+        priceMin: "", priceMax: "", minDisc: 0, endingIn: "",
+        sale: false, zh: false, released: false, favOnly: false,
+        sort: "deal", page: 1
+      };
+      var favs = loadFavs();
+
+      function $(id) { return document.getElementById(id); }
+      function loadFavs() {
+        try {
+          var v = JSON.parse(localStorage.getItem(FAV_KEY) || "[]");
+          var o = {};
+          if (Array.isArray(v)) v.forEach(function (id) { o[id] = true; });
+          return o;
+        } catch (e) { return {}; }
+      }
+      function saveFavs() {
+        try { localStorage.setItem(FAV_KEY, JSON.stringify(Object.keys(favs))); } catch (e) {}
+      }
+      function esc(s) {
+        return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+      function fmtNum(n) { return n == null ? "—" : Number(n).toLocaleString("zh-Hant-TW"); }
+      function fmtDate(d) {
+        if (!d) return "";
+        var t = new Date(d);
+        if (isNaN(t.getTime())) return String(d).slice(0, 10).replace(/-/g, "/");
+        var parts = new Intl.DateTimeFormat("zh-Hant-TW", { timeZone: "Asia/Taipei", year: "numeric", month: "2-digit", day: "2-digit" }).format(t);
+        return parts;
+      }
+      function fmtDateTime(d) {
+        if (!d) return "—";
+        var t = new Date(d);
+        if (isNaN(t.getTime())) return String(d);
+        return new Intl.DateTimeFormat("zh-Hant-TW", { timeZone: "Asia/Taipei", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hour12: false }).format(t);
+      }
+      function effPrice(g) { return g.discountPrice != null ? g.discountPrice : g.regularPrice; }
+      function isOnSale(g) { return g.discountPrice != null && g.discountPct != null && g.discountPct > 0; }
+      // Weighted deal score: discount depth scaled by log of regular price,
+      // so sub-NT$100 shovelware can't dominate discount rankings.
+      function dealScore(g) {
+        if (!isOnSale(g)) return -1;
+        var base = g.discountPct * Math.log10(Math.max(g.regularPrice || 1, 10));
+        if ((g.regularPrice || 0) < 100) base -= 1000;
+        return base;
+      }
+
+      /* ---------- data loading ---------- */
+      // One fetch attempt with a hard timeout, so a host that hangs
+      // (blocked mid-connection) falls through to the next mirror
+      // instead of leaving the spinner up forever.
+      function fetchJson(url, timeoutMs) {
+        return new Promise(function (resolve, reject) {
+          var done = false;
+          var ctrl = ("AbortController" in window) ? new AbortController() : null;
+          var timer = setTimeout(function () {
+            if (done) return;
+            done = true;
+            if (ctrl) { try { ctrl.abort(); } catch (e) {} }
+            reject(new Error("timeout"));
+          }, timeoutMs);
+          var opts = { cache: "no-store" };
+          if (ctrl) opts.signal = ctrl.signal;
+          fetch(url, opts)
+            .then(function (r) {
+              if (!r.ok) throw new Error("HTTP " + r.status);
+              return r.json();
+            })
+            .then(function (data) {
+              if (done) return;
+              done = true;
+              clearTimeout(timer);
+              resolve(data);
+            })
+            .catch(function (err) {
+              if (done) return;
+              done = true;
+              clearTimeout(timer);
+              reject(err);
+            });
+        });
+      }
+      function loadFrom(idx, errors) {
+        if (idx >= DATA_URLS.length) {
+          $("loadingState").classList.add("hidden");
+          $("errorState").classList.remove("hidden");
+          $("errorMsg").textContent = "無法讀取公開目錄資料（" + errors.join("；") + "），請檢查網路連線後再試一次。";
+          return;
+        }
+        var url = DATA_URLS[idx] + "?t=" + Date.now();
+        fetchJson(url, 20000)
+          .then(function (data) {
+            if (!data || !Array.isArray(data.games)) throw new Error("bad format");
+            games = data.games;
+            updatedAt = data.updated_at || null;
+            $("loadingState").classList.add("hidden");
+            $("content").classList.remove("hidden");
+            renderStats(data);
+            buildGenres();
+            buildPublishers();
+            applyAndRender();
+          })
+          .catch(function (err) {
+            errors.push(err && err.message ? err.message : "網路錯誤");
+            loadFrom(idx + 1, errors);
+          });
+      }
+      function load() {
+        $("loadingState").classList.remove("hidden");
+        $("errorState").classList.add("hidden");
+        $("content").classList.add("hidden");
+        loadFrom(0, []);
+      }
+
+      function renderStats(data) {
+        var priced = games.filter(function (g) { return g.regularPrice != null; }).length;
+        var sale = games.filter(isOnSale).length;
+        $("stTotal").textContent = fmtNum(data.total != null ? data.total : games.length);
+        $("stPriced").textContent = fmtNum(priced);
+        $("stSale").textContent = fmtNum(data.on_sale != null ? data.on_sale : sale);
+        $("stUpdated").textContent = fmtDateTime(updatedAt);
+      }
+
+      /* ---------- filter UI builders ---------- */
+      function buildGenres() {
+        var counts = {};
+        games.forEach(function (g) {
+          if (!g.genres || !g.genres.length) counts[UNKNOWN] = (counts[UNKNOWN] || 0) + 1;
+          else g.genres.forEach(function (t) { counts[t] = (counts[t] || 0) + 1; });
+        });
+        var html = '<button type="button" class="chip" data-genre="" aria-pressed="true">全部類型</button>';
+        GENRES.concat([UNKNOWN]).forEach(function (t) {
+          if (!counts[t]) return;
+          html += '<button type="button" class="chip" data-genre="' + esc(t) + '" aria-pressed="false">' + esc(t) + '<span class="cnt">' + counts[t].toLocaleString("zh-Hant-TW") + '</span></button>';
+        });
+        $("genreChips").innerHTML = html;
+        Array.prototype.forEach.call($("genreChips").querySelectorAll(".chip"), function (chip) {
+          chip.addEventListener("click", function () {
+            state.genre = chip.getAttribute("data-genre");
+            state.page = 1;
+            Array.prototype.forEach.call($("genreChips").querySelectorAll(".chip"), function (c) {
+              c.setAttribute("aria-pressed", c === chip ? "true" : "false");
+            });
+            applyAndRender();
+          });
+        });
+      }
+
+      var pubCounts = [];
+      function buildPublishers() {
+        var map = {};
+        games.forEach(function (g) {
+          var p = (g.publisher || "").trim();
+          if (!p) return;
+          var key = p.toLowerCase();
+          if (!map[key]) map[key] = { name: p, count: 0, spellings: {} };
+          map[key].count++;
+          map[key].spellings[p] = (map[key].spellings[p] || 0) + 1;
+        });
+        pubCounts = Object.keys(map).map(function (k) {
+          var e = map[k];
+          var best = e.name, bestN = -1;
+          Object.keys(e.spellings).forEach(function (s) { if (e.spellings[s] > bestN) { bestN = e.spellings[s]; best = s; } });
+          return { key: k, name: best, count: e.count };
+        }).sort(function (a, b) { return b.count - a.count || a.name.localeCompare(b.name); });
+        $("pubSummaryCnt").textContent = "（共 " + pubCounts.length + " 家）";
+        renderPubList("");
+      }
+      function renderPubList(filter) {
+        var f = (filter || "").trim().toLowerCase();
+        var html = "";
+        pubCounts.forEach(function (p) {
+          if (f && p.name.toLowerCase().indexOf(f) === -1) return;
+          var checked = state.pubs[p.key] ? " checked" : "";
+          html += '<label class="pub-item"><input type="checkbox" data-pub="' + esc(p.key) + '"' + checked + ' /><span class="nm">' + esc(p.name) + '</span><span class="cnt">' + p.count.toLocaleString("zh-Hant-TW") + ' 款</span></label>';
+        });
+        if (!html) html = '<div style="padding:10px 6px;color:var(--ink-3);font-size:13.5px">找不到這家發行商</div>';
+        $("pubList").innerHTML = html;
+        Array.prototype.forEach.call($("pubList").querySelectorAll("input[data-pub]"), function (cb) {
+          cb.addEventListener("change", function () {
+            var k = cb.getAttribute("data-pub");
+            if (cb.checked) state.pubs[k] = true; else delete state.pubs[k];
+            state.page = 1;
+            renderSelPubs();
+            applyAndRender();
+          });
+        });
+      }
+      function pubDisplayName(key) {
+        for (var i = 0; i < pubCounts.length; i++) if (pubCounts[i].key === key) return pubCounts[i].name;
+        return key;
+      }
+      function renderSelPubs() {
+        var keys = Object.keys(state.pubs);
+        var html = "";
+        keys.forEach(function (k) {
+          html += '<span class="sel-tag">' + esc(pubDisplayName(k)) + '<button type="button" data-rm="' + esc(k) + '" aria-label="移除">×</button></span>';
+        });
+        if (keys.length > 1) html += '<button type="button" class="clear-btn" id="clearPubs">清除發行商</button>';
+        $("selPubs").innerHTML = html;
+        Array.prototype.forEach.call($("selPubs").querySelectorAll("[data-rm]"), function (b) {
+          b.addEventListener("click", function () {
+            delete state.pubs[b.getAttribute("data-rm")];
+            state.page = 1;
+            renderSelPubs();
+            renderPubList($("pubQ").value);
+            applyAndRender();
+          });
+        });
+        var cp = $("clearPubs");
+        if (cp) cp.addEventListener("click", function () {
+          state.pubs = {};
+          state.page = 1;
+          renderSelPubs();
+          renderPubList($("pubQ").value);
+          applyAndRender();
+        });
+      }
+      function selectPublisherByName(name) {
+        var key = (name || "").trim().toLowerCase();
+        if (!key) return;
+        state.pubs = {};
+        state.pubs[key] = true;
+        state.page = 1;
+        renderSelPubs();
+        renderPubList($("pubQ").value);
+        $("pubDetails").open = true;
+        applyAndRender();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      /* ---------- filtering & sorting ---------- */
+      function filtered() {
+        var now = Date.now();
+        var q = state.q.trim().toLowerCase();
+        var pubKeys = Object.keys(state.pubs);
+        var today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Taipei" }));
+        var list = games.filter(function (g) {
+          if (q) {
+            var hay = ((g.name || "") + " " + (g.publisher || "")).toLowerCase();
+            if (hay.indexOf(q) === -1) return false;
+          }
+          if (state.genre) {
+            if (state.genre === UNKNOWN) { if (g.genres && g.genres.length) return false; }
+            else if (!g.genres || g.genres.indexOf(state.genre) === -1) return false;
+          }
+          if (pubKeys.length && pubKeys.indexOf((g.publisher || "").trim().toLowerCase()) === -1) return false;
+          if (state.platform && g.platform !== state.platform) return false;
+          var p = effPrice(g);
+          if (state.priceMin !== "" && (p == null || p < Number(state.priceMin))) return false;
+          if (state.priceMax !== "" && (p == null || p > Number(state.priceMax))) return false;
+          if (state.minDisc > 0 && (!isOnSale(g) || g.discountPct < state.minDisc)) return false;
+          if (state.endingIn) {
+            if (!isOnSale(g) || !g.saleEnd) return false;
+            var end = new Date(g.saleEnd).getTime();
+            var days = (end - now) / 86400000;
+            if (isNaN(days) || days < -1 || days > Number(state.endingIn)) return false;
+          }
+          if (state.sale && !isOnSale(g)) return false;
+          if (state.zh && !g.supportsZh) return false;
+          if (state.released) {
+            if (!g.releaseDate) return false;
+            if (new Date(g.releaseDate).getTime() > today.getTime()) return false;
+          }
+          if (state.favOnly && !favs[g.nsuid]) return false;
+          return true;
+        });
+        var endVal = function (g) { var t = g.saleEnd ? new Date(g.saleEnd).getTime() : NaN; return isNaN(t) ? Infinity : t; };
+        var relVal = function (g) { var t = g.releaseDate ? new Date(g.releaseDate).getTime() : NaN; return isNaN(t) ? -Infinity : t; };
+        switch (state.sort) {
+          case "discount":
+            list.sort(function (a, b) { return dealScore(b) - dealScore(a) || (effPrice(a) || 0) - (effPrice(b) || 0); });
+            break;
+          case "priceAsc":
+            list.sort(function (a, b) { return (effPrice(a) == null ? Infinity : effPrice(a)) - (effPrice(b) == null ? Infinity : effPrice(b)); });
+            break;
+          case "priceDesc":
+            list.sort(function (a, b) { return (effPrice(b) == null ? -Infinity : effPrice(b)) - (effPrice(a) == null ? -Infinity : effPrice(a)); });
+            break;
+          case "ending":
+            list.sort(function (a, b) {
+              var sa = isOnSale(a) ? 0 : 1, sb = isOnSale(b) ? 0 : 1;
+              if (sa !== sb) return sa - sb;
+              return endVal(a) - endVal(b) || dealScore(b) - dealScore(a);
+            });
+            break;
+          case "newest":
+            list.sort(function (a, b) { return relVal(b) - relVal(a); });
+            break;
+          case "name":
+            list.sort(function (a, b) { return String(a.name || "").localeCompare(String(b.name || ""), "zh-Hant"); });
+            break;
+          default: // deal: on-sale first by ending soonest, weighted score breaks ties
+            list.sort(function (a, b) {
+              var sa = isOnSale(a) ? 0 : 1, sb = isOnSale(b) ? 0 : 1;
+              if (sa !== sb) return sa - sb;
+              if (sa === 0) {
+                var d = endVal(a) - endVal(b);
+                if (d !== 0) return d;
+                return dealScore(b) - dealScore(a);
+              }
+              return relVal(b) - relVal(a);
+            });
+        }
+        return list;
+      }
+
+      /* ---------- rendering ---------- */
+      function cardHtml(g) {
+        var sale = isOnSale(g);
+        var fav = favs[g.nsuid] ? " active" : "";
+        var cover = g.coverUrl
+          ? '<img src="' + esc(g.coverUrl) + '" alt="' + esc(g.name) + ' 封面" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" /><div class="noimg" style="display:none">' + esc(g.name) + '</div>'
+          : '<div class="noimg">' + esc(g.name) + '</div>';
+        var tags = "";
+        if (g.genres && g.genres.length) {
+          tags = g.genres.map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join("");
+        } else {
+          tags = '<span class="tag unknown">類型待確認</span>';
+        }
+        var price = "";
+        if (g.regularPrice != null) {
+          if (sale) {
+            price = '<div class="price"><span class="now sale">NT$ ' + fmtNum(g.discountPrice) + '</span><span class="was">NT$ ' + fmtNum(g.regularPrice) + '</span></div>';
+          } else {
+            price = '<div class="price"><span class="now">NT$ ' + fmtNum(g.regularPrice) + '</span></div>';
+          }
+        }
+        var dates = "";
+        if (sale && (g.saleStart || g.saleEnd)) {
+          dates = '<div class="dates">特價期間：' + esc(fmtDate(g.saleStart)) + (g.saleStart && g.saleEnd ? " – " : "") + '<span class="end">' + esc(fmtDate(g.saleEnd)) + '</span></div>';
+        }
+        if (g.releaseDate) {
+          dates += '<div class="dates">發售日：' + esc(fmtDate(g.releaseDate)) + '</div>';
+        }
+        var platCls = g.platform === "Nintendo Switch 2" ? "plat s2" : "plat";
+        var platTxt = g.platform === "Nintendo Switch 2" ? "Switch 2" : "Switch";
+        return '<article class="card">' +
+          '<div class="cover">' + cover +
+            (sale ? '<span class="badge-off">-' + g.discountPct + '%</span>' : "") +
+            '<button type="button" class="fav' + fav + '" data-fav="' + esc(g.nsuid) + '" aria-label="收藏">' +
+              '<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' +
+            '</button>' +
+          '</div>' +
+          '<div class="card-body">' +
+            '<div class="gname">' + esc(g.name) + '</div>' +
+            '<div class="meta"><span class="' + platCls + '">' + platTxt + '</span>' +
+              (g.publisher ? '<button type="button" class="pub-link" data-pubname="' + esc(g.publisher) + '">' + esc(g.publisher) + '</button>' : "") +
+            '</div>' +
+            '<div class="tags">' + tags + '</div>' +
+            price + dates +
+            (g.officialUrl ? '<a class="ext" href="' + esc(g.officialUrl) + '" target="_blank" rel="noopener">台灣官方遊戲資訊 ↗</a>' : "") +
+          '</div>' +
+        '</article>';
+      }
+
+      function renderPager(totalPages) {
+        var p = state.page;
+        var html = "";
+        html += '<button type="button" data-page="' + (p - 1) + '"' + (p <= 1 ? " disabled" : "") + '>‹ 上一頁</button>';
+        var pages = [];
+        for (var i = 1; i <= totalPages; i++) {
+          if (i === 1 || i === totalPages || Math.abs(i - p) <= 2) pages.push(i);
+          else if (pages[pages.length - 1] !== "…") pages.push("…");
+        }
+        pages.forEach(function (n) {
+          if (n === "…") html += '<span class="gap">…</span>';
+          else html += '<button type="button" data-page="' + n + '"' + (n === p ? ' class="cur"' : "") + '>' + n + '</button>';
+        });
+        html += '<button type="button" data-page="' + (p + 1) + '"' + (p >= totalPages ? " disabled" : "") + '>下一頁 ›</button>';
+        $("pager").innerHTML = totalPages > 1 ? html : "";
+        Array.prototype.forEach.call($("pager").querySelectorAll("button[data-page]"), function (b) {
+          b.addEventListener("click", function () {
+            var np = Number(b.getAttribute("data-page"));
+            if (np >= 1 && np <= totalPages && np !== state.page) {
+              state.page = np;
+              applyAndRender();
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+          });
+        });
+      }
+
+      function applyAndRender() {
+        var list = filtered();
+        var totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+        if (state.page > totalPages) state.page = totalPages;
+        var start = (state.page - 1) * PAGE_SIZE;
+        var pageItems = list.slice(start, start + PAGE_SIZE);
+        $("resultLine").innerHTML = "共 <b>" + list.length.toLocaleString("zh-Hant-TW") + "</b> 款符合" +
+          (totalPages > 1 ? " · 第 <b>" + state.page + "</b> / " + totalPages + " 頁" : "");
+        $("grid").innerHTML = pageItems.map(cardHtml).join("");
+        $("emptyState").classList.toggle("hidden", list.length > 0);
+        $("grid").classList.toggle("hidden", list.length === 0);
+        renderPager(totalPages);
+        // wire card actions
+        Array.prototype.forEach.call($("grid").querySelectorAll("[data-fav]"), function (b) {
+          b.addEventListener("click", function () {
+            var id = b.getAttribute("data-fav");
+            if (favs[id]) delete favs[id]; else favs[id] = true;
+            saveFavs();
+            b.classList.toggle("active", !!favs[id]);
+            if (state.favOnly) applyAndRender();
+          });
+        });
+        Array.prototype.forEach.call($("grid").querySelectorAll("[data-pubname]"), function (b) {
+          b.addEventListener("click", function () { selectPublisherByName(b.getAttribute("data-pubname")); });
+        });
+      }
+
+      /* ---------- control wiring ---------- */
+      var qTimer = null;
+      $("q").addEventListener("input", function () {
+        clearTimeout(qTimer);
+        qTimer = setTimeout(function () { state.q = $("q").value; state.page = 1; if (games.length) applyAndRender(); }, 220);
+      });
+      $("sort").addEventListener("change", function () { state.sort = this.value; state.page = 1; applyAndRender(); });
+      $("platform").addEventListener("change", function () { state.platform = this.value; state.page = 1; applyAndRender(); });
+      $("priceMin").addEventListener("input", function () { state.priceMin = this.value; state.page = 1; if (games.length) applyAndRender(); });
+      $("priceMax").addEventListener("input", function () { state.priceMax = this.value; state.page = 1; if (games.length) applyAndRender(); });
+      $("minDisc").addEventListener("change", function () { state.minDisc = Number(this.value); state.page = 1; applyAndRender(); });
+      $("endingIn").addEventListener("change", function () { state.endingIn = this.value; state.page = 1; applyAndRender(); });
+      function bindToggle(id, key) {
+        $(id).addEventListener("change", function () {
+          state[key] = this.checked;
+          this.closest(".toggle").classList.toggle("on", this.checked);
+          state.page = 1;
+          applyAndRender();
+        });
+      }
+      bindToggle("fSale", "sale");
+      bindToggle("fZh", "zh");
+      bindToggle("fReleased", "released");
+      bindToggle("fFav", "favOnly");
+      $("pubQ").addEventListener("input", function () { renderPubList(this.value); });
+      function clearAll() {
+        state = { q: "", genre: "", pubs: {}, platform: "", priceMin: "", priceMax: "", minDisc: 0, endingIn: "", sale: false, zh: false, released: false, favOnly: false, sort: state.sort, page: 1 };
+        $("q").value = ""; $("platform").value = ""; $("priceMin").value = ""; $("priceMax").value = "";
+        $("minDisc").value = "0"; $("endingIn").value = "";
+        ["fSale", "fZh", "fReleased", "fFav"].forEach(function (id) {
+          $(id).checked = false;
+          $(id).closest(".toggle").classList.remove("on");
+        });
+        Array.prototype.forEach.call($("genreChips").querySelectorAll(".chip"), function (c, i) {
+          c.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+        });
+        renderSelPubs();
+        renderPubList($("pubQ").value);
+        applyAndRender();
+      }
+      $("clearAll").addEventListener("click", clearAll);
+      $("emptyClear").addEventListener("click", clearAll);
+      $("retryBtn").addEventListener("click", load);
+
+      load();
+    </script>
+  </body>
+</html>
