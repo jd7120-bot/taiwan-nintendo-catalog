@@ -673,8 +673,9 @@
         var today = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Taipei" }));
         var list = games.filter(function (g) {
           if (q) {
-            var hay = ((g.name || "") + " " + (g.publisher || "")).toLowerCase();
-            if (hay.indexOf(q) === -1) return false;
+            var qNorm = q.replace(/瑪利歐/g, "mario");
+            var hay = ((g.name || "") + " " + (g.publisher || "")).toLowerCase().replace(/瑪利歐/g, "mario");
+            if (hay.indexOf(qNorm) === -1) return false;
           }
           if (state.genre) {
             if (state.genre === UNKNOWN) { if (g.genres && g.genres.length) return false; }
